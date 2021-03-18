@@ -17,6 +17,12 @@ jobs:
       
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
+    
+    - name: Setup NuGet.exe
+      uses: nuget/setup-nuget@v1
+      
+    - name: Nuget restore 
+      run: nuget restore Fransom.sln
             
     - name: Build
       run: msbuild Fransom.sln /p:Configuration=Release 
