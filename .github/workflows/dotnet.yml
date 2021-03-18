@@ -26,3 +26,9 @@ jobs:
             
     - name: Build
       run: msbuild Fransom.sln /p:Configuration=Release 
+    
+    - uses: actions/upload-artifact@master
+      with:
+        name: Fransom
+        path: Fransom\bin\Release\Fransom.exe  
+          
