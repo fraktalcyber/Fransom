@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="APCInject.cs" />
     <Compile Include="APCInjectNewProcess.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="NetInjection.cs" />
     <Compile Include="Enumerate.cs" />
     <Compile Include="DumpLSASS.cs" />

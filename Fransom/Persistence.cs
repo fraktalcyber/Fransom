@@ -19,11 +19,11 @@ namespace Fransom
                 regkey = Registry.CurrentUser.CreateSubKey(keypath);
                 regkey.SetValue(keyname, command);
                 regkey.Close();
-                Console.WriteLine("[+] Created User HKCU:{0} key '{1}' and set to {2}", keypath, keyname, command);
+                Logger.WriteLine(String.Format("[+] Created User HKCU:{0} key '{1}' and set to {2}", keypath, keyname, command));
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error: {0}", e.Message);
+                Logger.WriteLine("[-] Error: " + e.Message);
             }
         }
 
@@ -37,11 +37,11 @@ namespace Fransom
                 regkey = Registry.CurrentUser.OpenSubKey(keypath, true);
                 regkey.DeleteValue(keyname);
                 regkey.Close();
-                Console.WriteLine("[+] Cleaned up HKCU:{0} {1} key", keypath, keyname);
+                Logger.WriteLine(String.Format("[+] Cleaned up HKCU:{0} {1} key", keypath, keyname));
             }
             catch (ArgumentException)
             {
-                Console.WriteLine("[-] Error: Selected Registry value does not exist");
+                Logger.WriteLine("[-] Error: Selected Registry value does not exist");
             }
         }
     }

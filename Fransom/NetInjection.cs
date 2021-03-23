@@ -12,7 +12,7 @@ namespace Fransom
 
             foreach (var type in assembly.GetTypes())
             {
-                Console.WriteLine("[*] Loaded Type {0}", type);
+                Logger.WriteLine("[*] Loaded Type: " + type);
                 object instance = Activator.CreateInstance(type);
                 object[] args = new object[] { new string[] { "" } };
                 try

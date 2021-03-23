@@ -85,10 +85,10 @@ namespace Fransom
         {
             if (!CheckServerAvailablity(Server, 445))
             {
-                Console.WriteLine("[x] Cannot contact server {0} on port 445", Server);
+                Logger.WriteLine(String.Format("[x] Cannot contact server {0} on port 445", Server));
                 return;
             }
-            Console.WriteLine("[*] Server {0} listening on port 445", Server);
+            Logger.WriteLine(String.Format("[*] Server {0} listening on port 445", Server));
 
             int entriesread = 0;
             int totalentries = 0;
@@ -103,21 +103,21 @@ namespace Fransom
                 for (int i = 0; i < entriesread; i++)
                 {
                     SHARE_INFO_1 shi1 = (SHARE_INFO_1)Marshal.PtrToStructure(currentPtr, typeof(SHARE_INFO_1));
-                    Console.WriteLine("[*] Server: {0} ShareName: {1}, ShareType: {2}, Remark {3}", server, shi1.shi1_netname, shi1.shi1_type, shi1.shi1_remark);
+                    Logger.WriteLine(String.Format("[*] Server: {0} ShareName: {1}, ShareType: {2}, Remark {3}", server, shi1.shi1_netname, shi1.shi1_type, shi1.shi1_remark));
                     currentPtr += nStructSize;
                 }
                 NetApiBufferFree(bufPtr);
             }
             else
             {
-                Console.WriteLine("[x] Server: {0}, Error={1}", Server, ret.ToString());
+                Logger.WriteLine(String.Format("[x] Server: {0}, Error={1}", Server, ret.ToString()));
                 return;
             }
         }
         // for threading
         private void EnumerateShares(List<string> servers)
         {
-            foreach(var s in servers)
+            foreach (var s in servers)
             {
                 EnumNetShares(s);
             }
@@ -128,7 +128,7 @@ namespace Fransom
             Process[] all = Process.GetProcesses();
             foreach (Process p in all)
             {
-                Console.WriteLine("{0}\t\t{1}", p.ProcessName, p.Id);
+                Logger.WriteLine(String.Format("{0}\t\t{1}", p.ProcessName, p.Id));
             }
         }
         public void EnumerateDomainUsers()
@@ -141,11 +141,11 @@ namespace Fransom
                     foreach (var result in searcher.FindAll())
                     {
                         UserPrincipal up = result as UserPrincipal;
-                        Console.WriteLine("First Name: " + up.GivenName);
-                        Console.WriteLine("Last Name : " + up.Surname);
-                        Console.WriteLine("SAM account name   : " + up.SamAccountName);
-                        Console.WriteLine("User principal name: " + up.UserPrincipalName);
-                        Console.WriteLine();
+                        Logger.WriteLine("First Name: " + up.GivenName);
+                        Logger.WriteLine("Last Name : " + up.Surname);
+                        Logger.WriteLine("SAM account name   : " + up.SamAccountName);
+                        Logger.WriteLine("User principal name: " + up.UserPrincipalName);
+                        Logger.WriteLine("");
                     }
                 }
             }
@@ -167,9 +167,9 @@ namespace Fransom
                 }
             }
 
-            Console.WriteLine("[*] Found {0} computers in the domain, enumerating shares...", computers.Count);
+            Logger.WriteLine(String.Format("[*] Found {0} computers in the domain, enumerating shares...", computers.Count));
             ThreadPool.SetMaxThreads(10, 10);
-            List<Thread> threads= new List<Thread>();
+            List<Thread> threads = new List<Thread>();
             foreach (var c in computers)
             {
                 Thread t = new Thread(() => EnumNetShares(c));
@@ -189,12 +189,13 @@ namespace Fransom
                 using (var searcher = new PrincipalSearcher(new ComputerPrincipal(context)))
                 {
                     foreach (var result in searcher.FindAll())
-                    {                        
+                    {
                         ComputerPrincipal cp = result as ComputerPrincipal;
-                        Console.WriteLine("Computer Name: " + cp.Name);
-                        Console.WriteLine("SAM account name: " + cp.SamAccountName);
-                        Console.WriteLine("User principal name: " + cp.UserPrincipalName);
-                        Console.WriteLine();
+
+                        Logger.WriteLine("Computer Name: " + cp.Name);
+                        Logger.WriteLine("SAM account name: " + cp.SamAccountName);
+                        Logger.WriteLine("User principal name: " + cp.UserPrincipalName);
+                        Logger.WriteLine("");
                     }
                 }
             }
@@ -210,10 +211,10 @@ namespace Fransom
                     foreach (var result in searcher.FindAll())
                     {
                         GroupPrincipal gp = result as GroupPrincipal;
-                        Console.WriteLine("Group Name: " + gp.Name);
-                        Console.WriteLine("SAM account name: " + gp.SamAccountName);
-                        Console.WriteLine("User principal name: " + gp.UserPrincipalName);
-                        Console.WriteLine();                        
+                        Logger.WriteLine("Group Name: " + gp.Name);
+                        Logger.WriteLine("SAM account name: " + gp.SamAccountName);
+                        Logger.WriteLine("User principal name: " + gp.UserPrincipalName);
+                        Logger.WriteLine("");
                     }
                 }
             }
@@ -224,7 +225,7 @@ namespace Fransom
             TrustRelationshipInformationCollection trusts = domain.GetAllTrustRelationships();
             foreach (TrustRelationshipInformation t in trusts)
             {
-                Console.WriteLine("Source: {0} Target: {1} TrustDirection: {2} TrustType: {3}", t.SourceName, t.TargetName, t.TrustDirection, t.TrustType);
+                Logger.WriteLine(String.Format("Source: {0} Target: {1} TrustDirection: {2} TrustType: {3}", t.SourceName, t.TargetName, t.TrustDirection, t.TrustType));
             }
         }
     }

