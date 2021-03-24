@@ -1,5 +1,5 @@
 | Ransomware / Group | Attack Phase | Description | MITRE |
-----------------------------------------------------------
+| ------------------ | ------------ | ----------- | ----- | 
 | Maze, Ryuk, FinFisher, FIN7 | Persistence | Add executable to the run registry key | T1547.001: Boot or Logon Autostart Execution - Registry Run Keys / Startup Folder |
 | Maze, FinFisher | Defense Evasion | Inject pre-compiled .NET assembly into memory | T1055.001: Process Injection - Dynamic-link Library Injection |
 | | Defense Evasion | Inject a thread inside a running process | T1055.003: Process Injection - Thread Execution Hijacking |
