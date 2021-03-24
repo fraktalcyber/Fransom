@@ -12,7 +12,7 @@
 | | Discovery | Enumerate domain users | T1087.002: Account Discovery - Domain Account | 
 | | Discovery | Enumerate domain groups | T1069.002: Permission Groups Discovery - Domain Groups | 
 | | Discovery | Enumerate domain computers | T1018: Remote System Discovery |
-| | Discovery | Enumerate domain trusts	T1482: Domain Trust Discovery | 
+| | Discovery | Enumerate domain trusts	 | T1482: Domain Trust Discovery | 
 | Maze, Ryuk | Impact | Encrypt files inside the user profile folders | T1486: Data Encrypted for Impact |
 | Maze, Ryuk | Impact | Encrypt files inside mounted network shares | T1486: Data Encrypted for Impact |
 | Maze, Ryuk, Ragnar Locker | Impact | Delete shadow copies | T1490: Inhibit System Recovery |
