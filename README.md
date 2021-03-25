@@ -10,12 +10,14 @@
 * Version: 0.6
 * Type "help" (without quotes) inside the emulator prompt to get a list of all the available options.
 
-About the tool: https://blog.fraktal.fi/
-About the authors: https://www.fraktal.fi 
+## About 
+
+* About the tool: https://blog.fraktal.fi/
+* About the authors: https://www.fraktal.fi 
 
 ## How do I get set up?
 
-* Open the .sln solution file in Visual Studio (developed with VS 2019, and VS 2017).
+* Open the .sln solution file in Visual Studio (developed with VS 2019 and VS 2017).
 * To add/modify functions:
 	* Add the corresponding option in the "options" class;
 	* Add the corresponding option in the "Run" function;
