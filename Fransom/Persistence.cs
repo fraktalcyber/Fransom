@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Win32;
+using Microsoft.Win32.TaskScheduler;
 
 namespace Fransom
 {
@@ -42,6 +43,36 @@ namespace Fransom
             catch (ArgumentException)
             {
                 Logger.WriteLine("[-] Error: Selected Registry value does not exist");
+            }
+        }
+
+        public void CreateScheduledTask()
+        {
+            string user = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            string TaskName = "FODCleanupTask"; //from FIN7, Carbanak
+            string Command = "\"c:\\windows\\system32\\calc.exe\"";
+            using (TaskService ts = new TaskService())
+            {
+                TaskDefinition td = ts.NewTask();
+                td.RegistrationInfo.Description = "Add a new scheduled task that will spawn calc.exe at user logon.";
+                LogonTrigger logonTrigger = new LogonTrigger();
+                LogonTrigger lTrigger = (LogonTrigger)td.Triggers.Add(new LogonTrigger());
+                lTrigger.Delay = TimeSpan.FromMinutes(1);
+                lTrigger.UserId = user;
+                td.Actions.Add(new ExecAction(Command,null,null));
+                td.Principal.Id = user;
+                ts.RootFolder.RegisterTaskDefinition(@TaskName, td, TaskCreation.CreateOrUpdate, null, null, TaskLogonType.InteractiveToken, null);
+                Logger.WriteLine(String.Format("[+] Created Scheduled Task with name '{0}' to run {1} at logon.", TaskName, Command));
+            }
+        }
+
+        public void RemoveScheduledTask()
+        {
+            using (TaskService ts = new TaskService())
+            {
+                string TaskName = "FODCleanupTask"; //from FIN7, Carbanak
+                ts.RootFolder.DeleteTask(TaskName);
+                Logger.WriteLine(String.Format("[+] Removed Scheduled Task with name '{0}'", TaskName, Command));
             }
         }
     }

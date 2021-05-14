@@ -27,6 +27,7 @@
 	* ILMerge NuGet package.
 	* ILMerge.MSBuild.Tasks NuGet package.
 	* Figgle NuGet package.
+	* TaskScheduler NuGet package.
 
 ## Risk considerations
 

