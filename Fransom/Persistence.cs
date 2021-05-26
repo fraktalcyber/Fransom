@@ -72,7 +72,7 @@ namespace Fransom
             {
                 string TaskName = "FODCleanupTask"; //from FIN7, Carbanak
                 ts.RootFolder.DeleteTask(TaskName);
-                Logger.WriteLine(String.Format("[+] Removed Scheduled Task with name '{0}'", TaskName, Command));
+                Logger.WriteLine(String.Format("[+] Removed Scheduled Task with name '{0}'", TaskName));
             }
         }
     }
