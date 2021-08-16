@@ -3,6 +3,7 @@
 | Maze, Ryuk, FinFisher, FIN7 | Persistence | Add executable to the run registry key | T1547.001: Boot or Logon Autostart Execution - Registry Run Keys / Startup Folder |
 | Carabanak, FIN7 | Persistence | Create Scheduled Task | T1053.005: Scheduled Task/Job - Scheduled Task |
 | Maze, FinFisher | Defense Evasion | Inject pre-compiled .NET assembly into memory | T1055.001: Process Injection - Dynamic-link Library Injection |
+| Carbanak, FIN7 | Defense Evasion | Process Hollowing | T1055.012: Process Injection - Process Hollowing |
 | | Defense Evasion | Inject a thread inside a running process | T1055.003: Process Injection - Thread Execution Hijacking |
 | | Defense Evasion | Inject code through Asynchronous Procedure Call | T1055.004: Process Injection - Asynchronous Procedure Call | 
 | FinFisher | Defense Evasion | Delete windows event logs from local machine | T1070.001: Clear Windows Event Logs |

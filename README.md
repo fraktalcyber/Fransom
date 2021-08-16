@@ -7,7 +7,7 @@
 ## What is this repository for?
 
 * Command-line executable that will emulate common ransomware functions for the purpose of testing endpoint detection and response tools.
-* Version: 0.6
+* Version: 0.7
 * Type "help" (without quotes) inside the emulator prompt to get a list of all the available options.
 
 ## About 
@@ -40,3 +40,4 @@ Fransom incorporates code and functionality from the following open source offen
  * Process injection mechanisms are from [C# Memory Injection Examples project](https://github.com/pwndizzle/c-sharp-memory-injection) by [pwndizzle](https://twitter.com/pwndizzle). 
  * LSASS dumping implementation is from https://github.com/GhostPack/SharpDump by [harmj0y](https://twitter.com/harmj0y). SharpDump is licensed under the BSD 3-Clause license, available [here](https://raw.githubusercontent.com/GhostPack/SharpDump/master/LICENSE).
  * calc.exe shellcode is from [win-exec-calc-shellcode](https://github.com/peterferrie/win-exec-calc-shellcode) by Berend-Jan "SkyLined" Wever and Peter Ferrie. [Copyright](https://raw.githubusercontent.com/peterferrie/win-exec-calc-shellcode/master/COPYRIGHT.txt).
+ * Process Hollowing implementation is from [Simple Process Hollowing C#](https://gist.github.com/smgorelik/9a80565d44178771abf1e4da4e2a0e75) by [smgorelik](https://twitter.com/smgoreli).

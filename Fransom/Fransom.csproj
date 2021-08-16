@@ -37,6 +37,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -90,6 +91,7 @@
     <Compile Include="Enumerate.cs" />
     <Compile Include="DumpLSASS.cs" />
     <Compile Include="Persistence.cs" />
+    <Compile Include="ProcessHollowing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteThread.cs" />
     <Compile Include="ThreadHijack.cs" />
