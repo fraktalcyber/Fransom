@@ -75,6 +75,10 @@ namespace Fransom
             public bool ScheduledTask { get; set; }
             [Option("scheduled-task-clean", HelpText = "Clean Scheduled Task persistence.", Group = "arguments")]
             public bool ScheduledTaskClean { get; set; }
+            [Option("create-local-account", HelpText = "(Requires Admin privileges) Persistence via new local account.", Group = "arguments")]
+            public bool CreateLocalAccount { get; set; }
+            [Option("remove-local-account", HelpText = "(Requires Admin privileges) Remove local account persistence.", Group = "arguments")]
+            public bool RemoveLocalAccount { get; set; }
             [Option("ps", HelpText = "Helper: List running processes.", Group = "arguments")]
             public bool ListProcesses { get; set; }
             [Option("domain-users", HelpText = "List domain users.", Group = "arguments")]
@@ -119,6 +123,8 @@ namespace Fransom
             Logger.WriteLine("userregkey-clean\t\t\tClear registry peristence.");
             Logger.WriteLine("scheduled-task\t\t\t\tPersistence via new Scheduled Task.");
             Logger.WriteLine("scheduled-task-clean\t\t\tClean Scheduled Task persistence.");
+            Logger.WriteLine("create-local-account\t\t\t(Requires Admin privileges) Persistence via new local account.");
+            Logger.WriteLine("remove-local-account\t\t\t(Requires Admin privileges) Remove local account persistence.");
             Logger.WriteLine("ps\t\t\t\t\tList running processes.");
             Logger.WriteLine("domain-users\t\t\t\tList domain users.");
             Logger.WriteLine("domain-groups\t\t\t\tList domain groups.");
@@ -142,7 +148,7 @@ namespace Fransom
             var helpText = HelpText.AutoBuild(result, h =>
             {
                 h.AdditionalNewLineAfterOption = false;
-                h.Heading = FiggleFonts.Doom.Render("FRANSOM v0.7");
+                h.Heading = FiggleFonts.Doom.Render("FRANSOM v0.8");
                 h.Copyright = "Copyright (c) 2021 Fraktal Ltd.";
                 return HelpText.DefaultParsingErrorsHandler(result, h);
             }, e => e);
@@ -259,6 +265,16 @@ namespace Fransom
                 var p = new Persistence();
                 p.RemoveScheduledTask();
             }
+            if (options.CreateLocalAccount)
+            {
+                var p = new Persistence();
+                p.CreateLocalAccount();
+            }
+            if (options.RemoveLocalAccount)
+            {
+                var p = new Persistence();
+                p.RemoveLocalAccount();
+            }
             if (options.DumpLsass)
             {
                 var d = new DumpLSASS();
@@ -306,7 +322,7 @@ namespace Fransom
             var pr = new Program();
             var ph = new ProcessHollowing();
             Logger.WriteLine("");
-            Logger.WriteLine(FiggleFonts.Doom.Render("FRANSOM v0.7"));
+            Logger.WriteLine(FiggleFonts.Doom.Render("FRANSOM v0.8"));
             Logger.WriteLine("Copyright (c) 2021 Fraktal Ltd.");
             Logger.WriteLine("");
             while (command != "exit")
@@ -426,6 +442,12 @@ namespace Fransom
                         break;
                     case "scheduled-task-clean":
                         p.RemoveScheduledTask();
+                        break;
+                    case "create-local-account":
+                        p.CreateLocalAccount();
+                        break;
+                    case "remove-local-account":
+                        p.RemoveLocalAccount();
                         break;
                     case "ps":
                         e.EnumerateProcesses();
