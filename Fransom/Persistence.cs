@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.Win32;
 using Microsoft.Win32.TaskScheduler;
+using System.DirectoryServices.AccountManagement;
+using System.DirectoryServices;
 
 namespace Fransom
 {
@@ -73,6 +75,44 @@ namespace Fransom
                 string TaskName = "FODCleanupTask"; //from FIN7, Carbanak
                 ts.RootFolder.DeleteTask(TaskName);
                 Logger.WriteLine(String.Format("[+] Removed Scheduled Task with name '{0}'", TaskName));
+            }
+        }
+        public void CreateLocalAccount()
+        {
+            try
+            {
+                string username = "fransom";
+                string password = "Fr@ns0m123!";
+                PrincipalContext context = new PrincipalContext(ContextType.Machine);
+                UserPrincipal user = new UserPrincipal(context);
+                user.SetPassword(password);
+                user.DisplayName = username;
+                user.Name = username;
+                user.Save();
+                GroupPrincipal group = GroupPrincipal.FindByIdentity(context, "Users");
+                group.Members.Add(user);
+                group.Save();
+                Logger.WriteLine(String.Format("[+] Created Local Account with username '{0}' and password '{1}'.", username, password));
+            }
+            catch (Exception e)
+            {
+                Logger.WriteLine("[-] Error: " + e.Message);
+            }
+        }
+        public void RemoveLocalAccount()
+        {
+            try
+            {
+                string username = "fransom";
+                DirectoryEntry localDirectory = new DirectoryEntry("WinNT://" + Environment.MachineName.ToString());
+                DirectoryEntries users = localDirectory.Children;
+                DirectoryEntry user = users.Find(username);
+                users.Remove(user);
+                Logger.WriteLine(String.Format("[+] Removed Local Account with username '{0}'.", username));
+            }
+            catch (Exception e)
+            {
+                Logger.WriteLine("[-] Error: " + e.Message);
             }
         }
     }
