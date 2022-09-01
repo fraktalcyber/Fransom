@@ -7,7 +7,7 @@
 ## What is this repository for?
 
 * Command-line executable that will emulate common ransomware functions for the purpose of testing endpoint detection and response tools.
-* Version: 0.8
+* Version: 0.9
 * Type "help" (without quotes) inside the emulator prompt to get a list of all the available options.
 
 ## About 
@@ -28,6 +28,8 @@
 	* ILMerge.MSBuild.Tasks NuGet package.
 	* Figgle NuGet package.
 	* TaskScheduler NuGet package.
+	* SSH.NET NuGet package.
+	* FluentFTP NuGet package.
 
 ## Risk considerations
 
