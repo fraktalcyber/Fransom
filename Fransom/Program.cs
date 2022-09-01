@@ -180,8 +180,8 @@ namespace Fransom
             var helpText = HelpText.AutoBuild(result, h =>
             {
                 h.AdditionalNewLineAfterOption = false;
-                h.Heading = FiggleFonts.Doom.Render("FRANSOM v0.8");
-                h.Copyright = "Copyright (c) 2021 Fraktal Ltd.";
+                h.Heading = FiggleFonts.Doom.Render("FRANSOM v0.9");
+                h.Copyright = "Copyright (c) 2022 Fraktal Ltd.";
                 return HelpText.DefaultParsingErrorsHandler(result, h);
             }, e => e);
             Logger.WriteLine(helpText);
@@ -400,8 +400,8 @@ namespace Fransom
             var ph = new ProcessHollowing();
             var ex = new Exfil();
             Logger.WriteLine("");
-            Logger.WriteLine(FiggleFonts.Doom.Render("FRANSOM v0.8"));
-            Logger.WriteLine("Copyright (c) 2021 Fraktal Ltd.");
+            Logger.WriteLine(FiggleFonts.Doom.Render("FRANSOM v0.9"));
+            Logger.WriteLine("Copyright (c) 2022 Fraktal Ltd.");
             Logger.WriteLine("");
             while (command != "exit")
             {
