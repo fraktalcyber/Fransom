@@ -123,6 +123,10 @@ namespace Fransom
             public bool ExfilHTTPS { get; set; }
             [Option("exfil-smb", HelpText = "Exfiltrate data using SMB", Group = "arguments")]
             public bool ExfilSMB { get; set; }
+            [Option("exfil-dns", HelpText = "Exfiltrate data using DNS", Group = "arguments")]
+            public bool ExfilDNS { get; set; }
+            [Option("exfil-icmp", HelpText = "Exfiltrate data using ICMP", Group = "arguments")]
+            public bool ExfilICMP { get; set; }
 
             [Option("shell", HelpText = "Drop into an interactive shell", Group = "arguments")]
             public bool Shell { get; set; }
@@ -163,6 +167,12 @@ namespace Fransom
             Logger.WriteLine("remove-local-account\t\t\t(Requires Admin privileges) Remove local account persistence.");
             Logger.WriteLine("create-service\t\t\t\t(Requires Admin privileges) Persistence via new service.");
             Logger.WriteLine("remove-service\t\t\t\t(Requires Admin privileges) Remove new service persistence.");
+            Logger.WriteLine("create-notepad-gflags\t\t\t\t(Requires Admin privileges) Persistence via notepad gflags.");
+            Logger.WriteLine("remove-notepad-gflags\t\t\t\t(Requires Admin privileges) Remove notepad gflags persistence.");
+            Logger.WriteLine("create-sethc-ifeo\t\t\t\t(Requires Admin privileges)  Persistence via sethc image file execution options.");
+            Logger.WriteLine("remove-sethc-ifeo\t\t\t\t(Requires Admin privileges) Remove sethc ifeo persistence.");
+            Logger.WriteLine("create-utilman-ifeo\t\t\t\t(Requires Admin privileges)  Persistence via utilman image file execution options.");
+            Logger.WriteLine("remove-utilman-ifeo\t\t\t\t(Requires Admin privileges) Remove utilman ifeo persistence.");
             Logger.WriteLine("ps\t\t\t\t\tList running processes.");
             Logger.WriteLine("domain-users\t\t\t\tList domain users.");
             Logger.WriteLine("domain-groups\t\t\t\tList domain groups.");
@@ -174,6 +184,8 @@ namespace Fransom
             Logger.WriteLine("exfil-http\t\t\t\tExfiltrate data using HTTP");
             Logger.WriteLine("exfil-https\t\t\t\tExfiltrate data using HTTPS");
             Logger.WriteLine("exfil-smb\t\t\t\tExfiltrate data using SMB");
+            Logger.WriteLine("exfil-dns\t\t\t\tExfiltrate data using DNS");
+            Logger.WriteLine("exfil-icmp\t\t\t\tExfiltrate data using ICMP");
             Logger.WriteLine("exit\t\t\t\t\tExit the interactive shell");
             Logger.WriteLine("");
         }
@@ -423,6 +435,16 @@ namespace Fransom
                 var ex = new Exfil();
                 ex.ExfilSMB();
             }
+            if (options.ExfilDNS)
+            {
+                var ex = new Exfil();
+                ex.ExfilDNS();
+            }
+            if (options.ExfilICMP)
+            {
+                var ex = new Exfil();
+                ex.ExfilICMP();
+            }
 
             if (options.Shell)
             {
@@ -632,8 +654,12 @@ namespace Fransom
                     case "exfil-smb":
                         ex.ExfilSMB();
                         break;
-
-
+                    case "exfil-dns":
+                        ex.ExfilDNS();
+                        break;
+                    case "exfil-icmp":
+                        ex.ExfilICMP();
+                        break;
                     case "exit":
                         break;
                     default:

